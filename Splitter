@@ -1,8 +1,9 @@
-// Resident Evil 5 Autosplitter Version 3.0 (4/9/2022)
+// Resident Evil 5 Autosplitter Version 2.2.0 (02/05/2023)
 // Supports LRT
 // Supports all difficulties
 // Splits can be obtained from https://www.speedrun.com/re5/resources
 // Script and Remodification by Mysterion06, TheDementedSalad
+// Area codes found and added by Asterxyx
 // Pointers by Dread, Austin "Auddy" Davenport, Wipefinger, Mysterion06, TheDementedSalad & Mattmatt
 
 // Special thanks to 
@@ -11,19 +12,19 @@
 
 state("re5dx9", "1.1.0")
 {
-	byte   Level: 		0xDA23D8, 0x273D0; 			// Current Level					
-	byte   newCut: 		0xE2487C, 0x984, 0x2EDC, 0x4; 		// Gamestate - 2 in game, 4 in cutscenes, 3 in shops, 0 loading screens
-	byte   isPaused: 	0xE2487C, 0x984, 0x2EDC, 0x3D; 		// 8 paused, 0 unpaused	
-	byte   menu: 		0xDA2970, 0x84, 0x4BC, 0x3A4;		// 1 main menu, 6 in game, 3 in shop (Makes sure timer doesn't count in main menu)
-	byte   QTE:		0xDA1934, 0x2F8;			// Checks if a QTE prompt is active, 0 when no prompt, 1 when prompt.
-	ushort areaCode: 	0xDA23D8, 0x273D8;			// Current area code, 100 beginning of 1-1, 115 when getting guns, 116 first majini attack
-	ushort HP: 		0xE243B4, 0xEC, 0x1364;			// Char HP	
-	int    P1ItemID: 	0xDA1934, 0xEBC;			// Player 1's latest item pickup ID
-	int    P2ItemID: 	0xDA1934, 0xF38;			// Player 2's latest item pickup ID (DLC)
-	int    keyItem: 	0xDA2970, 0x84, 0x18;			// Latest picked up key item (doesn't change on checkpoint reset)
-	float  IGT: 		0xDA23D8, 0x273F8;			// Gametime
-	float  PauseBuff: 	0xDA1F8C, 0x53C;			// 0.5 paused in game, 0 in shops, 1 in cutscenes (Catches any time bleed between pauses)
-	byte   Cutscene:	0xDA1934, 0xDB8;			// 1 Cutscene 0 no Cutscene
+	byte   Level: 		0xDA23D8, 0x273D0; 						// Current Level					
+	byte   newCut: 		0xE2487C, 0x984, 0x2EDC, 0x4; 			// Gamestate - 2 in game, 4 in cutscenes, 3 in shops, 0 loading screens
+	byte   isPaused: 	0xE2487C, 0x984, 0x2EDC, 0x3D; 			// 8 paused, 0 unpaused	
+	byte   menu: 		0xDA2970, 0x84, 0x4BC, 0x3A4;			// 1 main menu, 6 in game, 3 in shop (Makes sure timer doesn't count in main menu)
+	byte   QTE:			0xDA1934, 0x2F8;						// Checks if a QTE prompt is active, 0 when no prompt, 1 when prompt.
+	byte   areaCode: 	0xDA23D8, 0x273D8;						// Current area code, 100 beginning of 1-1, 115 when getting guns, 116 first majini attack
+	ushort HP: 			0xE243B4, 0xEC, 0x1364;					// Char HP	
+	int    P1ItemID: 	0xDA1934, 0xEBC;						// Player 1's latest item pickup ID
+	int    P2ItemID: 	0xDA1934, 0xF38;						// Player 2's latest item pickup ID (DLC)
+	int    keyItem: 	0xDA2970, 0x84, 0x18;					// Latest picked up key item (doesn't change on checkpoint reset)
+	float  IGT: 		0xDA23D8, 0x273F8;						// Gametime
+	float  PauseBuff: 	0xDA1F8C, 0x53C;					    // 0.5 paused in game, 0 in shops, 1 in cutscenes (Catches any time bleed between pauses)
+	byte   Cutscene:	0xDA1934, 0xDB8;						// 1 Cutscene 0 no Cutscene
 }
 
 state("re5dx9", "1.2.0")
@@ -32,19 +33,16 @@ state("re5dx9", "1.2.0")
 	byte   newCut: 		0xE34578, 0x984, 0x2EDC, 0x4; 			
 	byte   isPaused: 	0xE34578, 0x984, 0x2EDC, 0x3D; 			
 	byte   menu: 		0xDB26F0, 0x84, 0x4BC, 0x5E4;			
-	byte   QTE:		0xDB1794, 0x338;						
-	ushort areaCode: 	0xDB2158, 0x273D8;
-	ushort HP: 		0xE340B0, 0xEC, 0x1364;		
+	byte   QTE:			0xDB1794, 0x338;						
+	byte   areaCode: 	0xDB2158, 0x273D8;
+	ushort HP: 			0xE340B0, 0xEC, 0x1364;		
 	int    P1ItemID: 	0xDB1794, 0xEFC;						
 	int    P2ItemID: 	0xDB1794, 0xF78;						
 	int    keyItem: 	0xDB26F0, 0x84, 0x18;					
 	float  IGT: 		0xDB2158, 0x273F8;						
 	float  PauseBuff: 	0xDB1D0C, 0x53C;					    
 	byte   Cutscene:	0xDB1794, 0xDF8;
-	ushort P1DA:		0xE34578, 0x6C, 0x4C, 0x2D1C, 0x388;
-	ushort P2DA:		0xE34578, 0x6C, 0x4C, 0x2D1C, 0x3B4;
 }
-
 
 init
 {
@@ -67,14 +65,32 @@ startup
 	vars.LvlStorage = new List<int>()
 	{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
+	vars.CAC = new List<int>()
+    {118,103,119,109,94,200,201,204,205,57,102,46,97,244,101,247,250,252,99};
+
+    vars.OAC = new List<int>()
+    {103,106,108,111,94,202,209,95,205,45,102,53,97,245,101,100,98,252};
+
 	vars.completedSplits = new List<string>();
-	vars.Rocket = 0;
+	vars.totalGameTime = 0;
 	
-	settings.Add("Main", false, "Enable Main Game");
+	settings.Add("Time", false, "Timing Methods");
+	settings.CurrentDefaultParent = "Time";
+	settings.Add("LRT", false, "Load Remover Time");
+	settings.Add("IGT", false, "In Game Time (Legacy, can't be submitted)");
+	settings.CurrentDefaultParent = null;
+	
+	settings.Add("Main", false, "Main Game Extras");
 	settings.CurrentDefaultParent = "Main";
 	settings.Add("No1-1", false, "Enable No 1-1");
 	settings.Add("IL", false, "Enable Individual Levels");
 	settings.CurrentDefaultParent = null;
+
+	settings.Add("Split", false, "Main Game Splits");
+	settings.CurrentDefaultParent = "Split";
+	settings.Add("Chapter", false, "Chapter Splits");
+	settings.Add("Area", false, "Area Splits");
+	
 	settings.Add("DLC", false, "Enable DLC's & Item Splits");
 	settings.CurrentDefaultParent = "DLC";
 	settings.Add("LiN", false, "Lost in Nightmares");
@@ -111,8 +127,10 @@ update{
     if (timer.CurrentPhase == TimerPhase.NotRunning)
     {
 		vars.completedSplits.Clear();
-		vars.Rocket = 0;
+		vars.totalGameTime = 0;
     }
+	
+	//print(modules.First().ModuleMemorySize.ToString());
 }
 
 start
@@ -122,14 +140,24 @@ start
 
 split
 {
-		if(current.newCut == 7 && old.newCut != 7){
-			return true;
-		}
-			
-		if(current.QTE == 0 && old.QTE == 1 && current.newCut == 4 && current.areaCode == 508){
-			return true;
-		}
+	if(current.QTE == 0 && old.QTE == 1 && current.Cutscene == 1 && current.areaCode == 252){
+		return true;
+	}
 	
+	if(settings ["Chapter"] && current.newCut == 7 && old.newCut != 7){
+		return true;
+	}
+	
+	if(settings ["Area"]){
+		if(vars.CAC.Contains(current.areaCode) && vars.OAC.Contains(old.areaCode)){
+            return false;
+        }
+
+        else if(current.areaCode != old.areaCode){
+            return true;
+        }
+	}
+		
 	if(settings ["DLC"]){
 		vars.hashString = current.keyItem.ToString();
 	
@@ -145,14 +173,41 @@ split
 	
 isLoading
 {
-	// Stops the timer in cutscenes and loading screens. Keeps running in shops and gameplay.
-	if(current.newCut == 3 && current.HP != 0 || current.newCut != 2 && current.newCut != 3 && current.HP != 0 || current.menu == 1 || current.isPaused == 8 && current.newCut != 3 || current.PauseBuff != 1 && current.IGT == old.IGT || current.newCut == 7){
-		return true;
+	if(settings["LRT"]){
+		// Stops the timer in cutscenes and loading screens. Keeps running in shops and gameplay.
+		if(current.newCut == 3 && current.HP != 0 || current.newCut != 2 && current.newCut != 3 && current.HP != 0 || current.menu == 1 || current.isPaused == 8 && current.newCut != 3 || current.PauseBuff != 1 && current.IGT == old.IGT || current.newCut == 7){
+			return true;
 		}
 		
-    else{
-		return false;
+		else{
+			return false;
+		
 		}
+	}
+	
+	if(settings["IGT"]){
+		return true;
+	}
+}
+
+gameTime
+{
+	if(settings["IGT"]){
+		if(current.IGT > old.IGT){
+			return TimeSpan.FromSeconds(System.Math.Floor(vars.totalGameTime + current.IGT));
+		}
+		if(current.IGT == 0 && current.Level != old.Level){
+			vars.totalGameTime = System.Math.Floor(vars.totalGameTime + old.IGT);
+			return TimeSpan.FromSeconds(System.Math.Floor(vars.totalGameTime + current.IGT));
+		}
+	}
+		
+	if(settings["IGT"] && settings["IL"]){
+		return TimeSpan.FromSeconds(current.IGT);
+	}
+	if(settings["IGT"] && settings["DLC"]){
+			return TimeSpan.FromSeconds(System.Math.Floor(vars.totalGameTime + current.IGT));
+	}
 }
 
 reset
